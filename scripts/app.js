@@ -1,3 +1,9 @@
+function play(){
+  var audio = document.getElementById("audio");
+  audio.play();
+}
+
+
 var bitcoins = 0
 var bitcoinRate = 0
 
@@ -6,75 +12,93 @@ var bitcoinRate = 0
 var items = [
   {
     "name": "item_oldCalculator",
-    "price": "0.0000001"
+    "price": "0.01"
+    //"price": "0.0000001"
   },
   {
     "name": "item_oldCpu",
-    "price": "0.00000125"
+    "price": "1.25"
+    //"price": "0.00000125"
   },
   {
     "name": "item_oldComputerFromGrandpa",
-    "price": "0.00003"
+    "price": "30"
+    //"price": "0.00003"
   },
   {
     "name": "item_rapsberrypy",
-    "price": "0.00005"
+    "price": "50"
+    //"price": "0.00005"
   },
   {
     "name": "item_smartphone",
-    "price": "0.0005"
+    "price": "500"
+    //"price": "0.0005"
   },
   {
     "name": "item_middleClassPC",
-    "price": "0.0015"
+    "price": "1500"
+    //"price": "0.0015"
   },
   {
     "name": "item_cheapServer",
-    "price": "0.004"
+    "price": "4000"
+    //"price": "0.004"
   },
   {
     "name": "item_gamingPC",
-    "price": "0.015"
+    "price": "15000"
+    //"price": "0.015"
   },
   {
     "name": "item_cheapMiner",
-    "price": "0.05"
+    "price": "50000"
+    //"price": "0.05"
   },
   {
     "name": "item_highEndUltraPC",
-    "price": "0.15"
+    "price": "150000"
+    //"price": "0.15"
   },
   {
     "name": "item_bigMiner",
-    "price": "1.5"
+    "price": "1500000"
+    //"price": "1.5"
   },
   {
     "name": "item_miningFarm",
-    "price": "250"
+    "price": "250000000"
+    //"price": "250"
   },
   {
     "name": "item_nasaPC",
-    "price": "5000"
+    "price": "5000000000"
+    //"price": "5000"
   },
   {
     "name": "item_quantumRig",
-    "price": "245000"
+    "price": "245000000000"
+    //"price": "245000"
   },
   {
     "name": "item_miningFarmSpace",
-    "price": "2000000"
+    "price": "2000000000000"
+    //"price": "2000000"
   },
   {
     "name": "item_miningFarmMoon",
-    "price": "75500000"
+    "price": "75500000000000"
+    //"price": "75500000"
   },
   {
     "name": "item_bitcoinTimeMachine",
-    "price": "975000000"
+    "price": "975000000000000"
+    //"price": "975000000"
   },
   {
     "name": "item_blackHolePoweredMiner",
-    "price": "750000000000"
+    "price": "750000000000000000"
+    //"price": "750000000000"
   }
 ]
 
@@ -101,7 +125,7 @@ if(localStorage.getItem("bitcoins") === null){
   $(".bitcoinAmount").text("loading...")
   $(".satoshiAmount").text("loading...")
 
-  let satoshis = bitcoins * 100000000;
+  let satoshis = bitcoins * 100;
 
 }
 
@@ -120,7 +144,7 @@ var Game = {}
 // Every constant variable is saved here
 Game.GameConst = {
   "priceMultiplier": 1.15,
-  "VERSION": "1.4.0"
+  "VERSION": "1.0.1"
 }
 
 Game.units = [
@@ -175,7 +199,7 @@ Game.setPriceAtGameBeginning = function (element, price, itemAmount) {
   var calculation = (parseFloat(price) * Math.pow(multiplier, parseInt(itemAmount))).toFixed(8)
 
   // Showing the actual price
-  element.children()[2].textContent = calculation + " Bitcoins"
+  element.children()[2].textContent = calculation + " Money"
 
   // Set the data-price attribute with the new price
   element.attr("data-price", calculation.toString())
@@ -311,7 +335,7 @@ Game.setNewPrice = function()
         var calculation = (parseFloat(items[i].price) * Math.pow(multiplier, parseInt(itemAmount))).toFixed(8)
 
         // Showing the actual price
-        $element.children()[2].textContent = calculation + " Bitcoins"
+        $element.children()[2].textContent = calculation + " Money"
 
         // Set the data-price attribute with the new price
         $element.attr("data-price", calculation.toString())
@@ -378,7 +402,7 @@ Game.stopBsec = function () {
  * @returns {string} An optimized number as a string with its unit
  */
 Game.optimizeNumber = function () {
-  if(this >= 1e6){
+  if(this >= 1e14){
     let number = parseFloat(this)
     let unit = Math.floor(parseFloat(number.toExponential(0).toString().replace("+", "").slice(2)) / 3) * 3
 
@@ -406,6 +430,17 @@ Game.resetGame = function () {
   localStorage.setItem("bitcoins", "0")
   localStorage.clear()
   location.reload()
+}
+
+Game.gamble = function () {
+  const result = ["yes", "no", "no"];
+
+  const random = Math.floor(Math.random() * result.length);
+  if (random === "yes") {
+    bitcoins = bitcoins * 1.3
+  } else {
+    bitcoins = bitcoins * 0.8
+  }
 }
 
 // --------------------------------------------------- //
@@ -444,7 +479,14 @@ $(document).ready(function () {
   $(".bitcoin").click(function () {
 
     // Add 1^-8 Bitcoins (equal to 1 satoshi)
-    bitcoins = bitcoins + 0.00000001
+    if(bitcoins === 0) {
+      bitcoins = bitcoins + 0.001
+    } else if(bitcoins < 10) {
+      bitcoins = bitcoins * 1.1
+    } else {
+      bitcoins = bitcoins * 1.01
+    }
+    //if(bitcoins < 50)
 
     // Show the new number on the page
     if(bitcoins > 1000000){
@@ -501,7 +543,7 @@ $(document).ready(function () {
       bitcoins = parseFloat(bitcoins.toFixed(8)) - price
 
       // Save the new amount of Bitcoins in the localStorage storage
-      localStorage.setItem("bitcoins", "" + bitcoins + "")
+      localStorage.setItem("Bitcoins", "" + bitcoins + "")
 
       // Changing amount number on the right of the item
       amountDisplayAmount = amountDisplayAmount + 1
@@ -557,6 +599,16 @@ $(document).ready(function () {
   // If the reset button was pressed, do following thing
   $(".resetButton").click(function () {
     Game.resetGame()
+  })
+
+  $(".gamble").click(function () {
+  var random = Math.floor(Math.random() * 10) + 1;
+  if (random <= 4) {
+    bitcoins = bitcoins * 1.6
+  } else {
+    bitcoins = bitcoins * 0.8
+  }
+  console.log(random, Math.random())
   })
 
 });
